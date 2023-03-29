@@ -60,5 +60,5 @@ spec:
     port: 80 # Port-Nummer
     targetPort: 80 # Port-Nummer, auf den der Service verweist
   type: LoadBalancer # Typ des Services
-  loadBalancerIP: 10.1.1.1
-  clusterIP: 10.152.183.222
+  loadBalancerIP: 10.1.1.1 #Die externe IP-Adresse des Load Balancers
+  clusterIP: 10.152.183.222 #Die interne IP-Adresse des Services im Cluster
