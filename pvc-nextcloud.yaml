@@ -1,0 +1,32 @@
+# Definiert das Persistent Volume für die Nextcloud-Daten
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud-pv2 # Name vom Persistent Volume
+  namespace: nextcloud # Namespace, in dem das Volume erstellt wird
+spec:
+  storageClassName: "" # Speicherklasse für das Volume
+  capacity:
+    storage: 10Gi # Größe des Volumes
+  accessModes:
+    - ReadWriteOnce # Zugriffsmodus für das Volume
+  persistentVolumeReclaimPolicy: Retain # Reclaim-Policy für das Volume
+  hostPath:
+    path: /home/sandro/nextcloud-data # Host-Path für das Volume
+
+# Definiert den Persistent Volume Claim für die Nextcloud-Daten
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-pvc10 # Name vom Persistent Volume Claim
+  namespace: nextcloud # Namespace, in dem der Claim erstellt wird
+spec:
+  storageClassName: "" # Speicherklasse für den Claim
+  volumeName: nextcloud-pv2 # Name vom zugehörigen Persistent Volume
+  accessModes:
+    - ReadWriteOnce # Zugriffsmodus für den Claim
+  volumeMode: Filesystem # Modus für das Volume
+  resources:
+    requests:
+      storage: 10Gi # Größe des zugeordneten Volumes

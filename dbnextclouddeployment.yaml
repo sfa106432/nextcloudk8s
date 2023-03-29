@@ -1,0 +1,59 @@
+# Definiert den Deployment für die MariaDB-Datenbank
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: db # Labels helfen bei der Selektion von Ressourcen
+  name: nextcloud-mariadb # Name des Deployments
+  namespace: nextcloud # Namespace, in dem das Deployment erstellt wird
+spec:
+  replicas: 1 # Anzahl der Pod-Replikationen
+  strategy:
+    type: Recreate # Strategie zur Aktualisierung des Deployments
+  selector:
+    matchLabels:
+      app: db # Selektiert die Pod-Instanzen anhand der Label
+  template:
+    metadata:
+      labels:
+        app: db # Labels für den Pod
+    spec:
+      # Definiert das Persistent Volume für die MariaDB-Datenbank
+      volumes:
+      - name: nextcloud-storage1 # Name vom PVC
+        persistentVolumeClaim:
+          claimName: nextcloud-pvc1 # Name vom Persistent Volume Claim
+      containers:
+      - env:
+        # Setzt die Umgebungsvariablen für die Datenbank-Konfiguration
+        - name: MYSQL_DATABASE # Name der Datenbank
+          value: nextcloud
+        - name: MYSQL_PASSWORD # Passwort für den Benutzer
+          value: sml12345
+        - name: MYSQL_USER # Benutzername für die Datenbank
+          value: nextcloud
+        - name: MYSQL_ROOT_PASSWORD # Root-Passwort für die Datenbank
+          value: sml12345
+        image: mariadb # Name des Docker-Images
+        name: db # Name des Containers
+        volumeMounts:
+        - mountPath: /var/lib/mysql # Mount-Pfad im Container
+          name: db # Name vom Volume
+        volumeMounts:
+        - mountPath: /datenbank # Mount-Pfad im Container
+          name: nextcloud-storage1 # Name vom PVC
+
+# Definiert den Service für die MariaDB-Datenbank
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-nextcloud-db # Name des Services
+  namespace: nextcloud # Namespace, in dem der Service erstellt wird
+spec:
+  ports:
+    - port: 3306 # Port-Nummer
+      targetPort: 3306 # Port-Nummer, auf den der Service verweist
+      protocol: TCP
+  selector:
+    app: db # Selektiert die Pod-Instanzen anhand der Label
